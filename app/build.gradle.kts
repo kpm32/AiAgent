@@ -65,7 +65,6 @@ dependencies {
     implementation(libs.converter.moshi)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
-
     implementation(libs.okhttp.dnsoverhttps)
 
     // DAGGER:HILT

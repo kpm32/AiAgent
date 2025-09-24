@@ -2,24 +2,19 @@ package com.example.aiagent.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.aiagent.domain.lm_repository.LlmClientRepository
+import com.example.aiagent.domain.models.AgentUiState
+import com.example.aiagent.domain.use_case.AgentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-data class AgentUiState(
-    val input: String = "",
-    val output: String = "",
-    val loading: Boolean = false,
-    val error: String? = null
-)
-
 @HiltViewModel
 class AgentViewModel @Inject constructor(
-    private val llm: LlmClientRepository
+    private val llmUseCase: AgentUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AgentUiState())
@@ -41,8 +36,8 @@ class AgentViewModel @Inject constructor(
                 val user   = "Объясни термин/понятие: $term"
 
                 // СТРИМ: приходят дельты, просто дописываем в output
-                llm.stream(system, user).collect { delta ->
-                    _state.value = _state.value.copy(output = _state.value.output + delta)
+                llmUseCase.stream(system, user).collect { delta ->
+                    _state.update { st -> st.copy(output = st.output + delta) }
                 }
                 _state.value = _state.value.copy(loading = false)
             } catch (e: Exception) {

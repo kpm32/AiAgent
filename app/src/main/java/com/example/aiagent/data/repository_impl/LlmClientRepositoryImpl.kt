@@ -1,5 +1,10 @@
-package com.example.aiagent.data
+package com.example.aiagent.data.repository_impl
 
+
+import com.example.aiagent.data.network.LmStudioApi
+import com.example.aiagent.data.models.ChatRequestDto
+import com.example.aiagent.data.models.Message
+import com.example.aiagent.data.models.StreamChunk
 import com.example.aiagent.domain.lm_repository.LlmClientRepository
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
@@ -8,10 +13,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okio.Buffer
 
-class LmStudioLlmClient(
+class LlmClientRepositoryImpl(
     private val api: LmStudioApi,
     private val model: String,
-    private val moshi: Moshi
+    moshi: Moshi
 ) : LlmClientRepository {
 
     private val chunkAdapter = moshi.adapter(StreamChunk::class.java)
@@ -27,14 +32,14 @@ class LmStudioLlmClient(
             val mdl = model.trim()
             require(mdl.isNotEmpty()) { "LM_STUDIO_MODEL пуст. Укажи id модели из /v1/models" }
 
-            val req = ChatRequest(
+            val req = ChatRequestDto(
                 model = mdl,
                 messages = listOf(
                     Message(role = "system", content = system.trim()),
-                    Message(role = "user",   content = user.trim())
+                    Message(role = "user", content = user.trim())
                 ),
                 temperature = 0.2,
-                max_tokens = 600,    // можно поднять потолок
+                maxTokens = 600,    // можно поднять потолок
                 stream = true
             )
 
