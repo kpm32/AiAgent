@@ -82,10 +82,10 @@ Network (debug)
 OkHttp настроен без общего callTimeout и с большими read/write-таймаутами.
 Используем stream=true и читаем SSE-чанки — ответ приходит сразу, без долгого ожидания.
 
-# список моделей
+список моделей
 curl http://localhost:8800/v1/models
 
-# пример запроса как у приложения (stream=true)
+пример запроса как у приложения (stream=true)
 curl http://localhost:8800/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
