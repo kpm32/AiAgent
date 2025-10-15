@@ -29,19 +29,13 @@ android {
     buildTypes {
 
         release {
-            buildConfigField("String","LM_STUDIO_BASE_URL","\"${project.findProperty("LM_STUDIO_BASE_URL") ?: "http://10.0.2.2:8800/"}\"")
-            buildConfigField("String","LM_STUDIO_MODEL","\"${project.findProperty("LM_STUDIO_MODEL") ?: ""}\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
-        debug {
-            buildConfigField("String","LM_STUDIO_BASE_URL","\"${project.findProperty("LM_STUDIO_BASE_URL") ?: "http://10.0.2.2:8800/"}\"")
-            buildConfigField("String","LM_STUDIO_MODEL","\"${project.findProperty("LM_STUDIO_MODEL") ?: "s3nh/whiterabbitneo-WhiteRabbitNeo-13B-GGUF/whiterabbitneo-WhiteRabbitNeo-13B.Q4_K_S.gguf"}\"")
 
-        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -70,8 +64,13 @@ dependencies {
     // DAGGER:HILT
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.compose.foundation)
     kapt(libs.hilt.android.compiler)
 
+
+    implementation("io.ktor:ktor-client-okhttp:3.3.0")
+    implementation("io.ktor:ktor-client-content-negotiation:3.3.0")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.0")
 
     // Moshi + Kotlin
     implementation(libs.moshi.kotlin)

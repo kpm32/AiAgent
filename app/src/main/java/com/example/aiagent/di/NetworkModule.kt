@@ -1,6 +1,5 @@
 package com.example.aiagent.di
 
-import com.example.aiagent.BuildConfig
 import com.example.aiagent.data.network.LmStudioApi
 import com.squareup.moshi.Moshi
 import dagger.Module
@@ -13,15 +12,17 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+const val LM_STUDIO_BASE_URL = "http://10.0.2.2:8089"
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     fun provideMoshi(): Moshi = Moshi.Builder()
         .add(com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory())
         .build()
+
 
     @Provides @Singleton
     fun provideLmOkHttp(): OkHttpClient = OkHttpClient.Builder()
@@ -38,7 +39,7 @@ object NetworkModule {
         client: OkHttpClient,
         moshi: Moshi
     ): LmStudioApi = Retrofit.Builder()
-        .baseUrl(BuildConfig.LM_STUDIO_BASE_URL)
+        .baseUrl(LM_STUDIO_BASE_URL)
         .client(client)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()

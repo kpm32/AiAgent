@@ -1,54 +1,57 @@
 package com.example.aiagent.data.models
 
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
 
-// ---------- request / response ----------
-@JsonClass(generateAdapter = true)
 data class ChatRequestDto(
-    @Json(name = "model") val model: String,
-    @Json(name = "messages") val messages: List<Message>,
-    @Json(name = "temperature") val temperature: Double? = 0.2,
-    @Json(name = "max_tokens") val maxTokens: Int? = 300,
-    @Json(name = "stream") val stream: Boolean? = true
+    @Json(name = "message") val message: String
 )
 
-@JsonClass(generateAdapter = true)
-data class Message(
-    @Json(name = "role") val role: String,
-    @Json(name = "content") val content: String
-)
-
-@JsonClass(generateAdapter = true)
 data class ChatResponse(
-    @Json(name = "choices") val choices: List<Choice>
+    @Json(name = "reply") val reply: ApiAnswer,
+    @Json(name = "tookMs") val tookMs: Long
 )
 
-@JsonClass(generateAdapter = true)
-data class Choice(
-    @Json(name = "message") val message: Message
+// --- Ниже структуры ответа (точно как на сервере) ---
+
+data class ApiAnswer(
+    val status: String,
+    val intent: String,
+    val query: String,
+    val message: String? = null,
+    val items: List<MetaItem> = emptyList(),
+    val structure: MetaStructure? = null,
+    val toolCalls: List<ToolCallLog> = emptyList()
 )
 
-// ---------- streaming chunks ----------
-@JsonClass(generateAdapter = true)
-data class StreamChunk(
-    @Json(name = "choices") val choices: List<StreamChoice>?
+data class MetaItem(
+    val type: String,
+    val name: String,
+    val title: String? = null
 )
 
-@JsonClass(generateAdapter = true)
-data class StreamChoice(
-    @Json(name = "delta") val delta: Delta? = null,
-    @Json(name = "message") val message: StreamMessage? = null
+data class MetaStructure(
+    val metaType: String,
+    val objectName: String,
+    val attributes: List<Field> = emptyList(),
+    val tables: List<Table> = emptyList()
 )
 
-@JsonClass(generateAdapter = true)
-data class Delta(
-    @Json(name = "content") val content: String? = null
+data class Field(
+    val name: String,
+    val type: String,
+    val description: String? = null
 )
 
-@JsonClass(generateAdapter = true)
-data class StreamMessage(
-    @Json(name = "role") val role: String? = null,
-    @Json(name = "content") val content: String? = null
+data class Table(
+    val name: String,
+    val columns: List<Field>
 )
+
+data class ToolCallLog(
+    val name: String,
+    val args: Map<String, String>,
+    val success: Boolean,
+    val note: String? = null
+)
+
 
