@@ -19,7 +19,6 @@ class LLMMapper @Inject constructor(){
         when (apiAnswer.intent) {
             "search_metadata" -> {
                 appendLine()
-
                 val items = apiAnswer.items
                 if (items.isEmpty()) {
                     appendLine("— ничего не найдено")
@@ -38,7 +37,6 @@ class LLMMapper @Inject constructor(){
                     appendLine("Структура не получена.")
                 } else {
                     appendLine("Объект: ${s.objectName} (${s.metaType})")
-
                     if (s.attributes.isNotEmpty()) {
                         appendLine()
                         appendLine("Реквизиты:")
@@ -47,7 +45,6 @@ class LLMMapper @Inject constructor(){
                             appendLine("• ${f.name}: ${f.type}$d")
                         }
                     }
-
                     if (s.tables.isNotEmpty()) {
                         appendLine()
                         appendLine("Табличные части:")
@@ -59,6 +56,27 @@ class LLMMapper @Inject constructor(){
                             }
                         }
                     }
+                }
+            }
+
+            "odata_query" -> {
+                appendLine()
+                val d = apiAnswer.data
+                if (d == null || d.value.isEmpty()) {
+                    appendLine("Нет данных.")
+                } else {
+                    appendLine("Источник: ${d.entitySet}")
+                    val rows = d.value
+                    // маленькое превью — Code / Description / Ref_Key, если есть
+                    rows.take(10).forEachIndexed { i, row ->
+                        val code = row["Code"] ?: row["Код"]
+                        val desc = row["Description"] ?: row["Наименование"]
+                        val ref = row["Ref_Key"] ?: row["Ссылка_Key"]
+                        val head = listOfNotNull(code, desc).joinToString(" — ").ifBlank { ref?.toString() ?: "(строка ${i + 1})" }
+                        appendLine("${i + 1}. $head")
+                    }
+                    d.count?.let { appendLine("Всего (по серверу): $it") }
+                    d.nextLink?.let { appendLine("Есть следующая страница…") }
                 }
             }
 
